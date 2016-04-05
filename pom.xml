@@ -1,0 +1,132 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>IdentityTopology</groupId>
+	<artifactId>IdentityTopology</artifactId>
+	<version>1.0.0</version>
+
+	<properties>
+		<maven.compiler.version>3.3</maven.compiler.version>
+		<java.version>1.7</java.version>
+		<maven.plugin.assembly>2.6</maven.plugin.assembly>
+		<storm.version>0.10.0</storm.version>
+		<scala.version>2.10</scala.version>
+		<kafka.version>0.8.2.2</kafka.version>
+		<kafka.clients.version>0.8.2.2</kafka.clients.version>
+		<rabbitmq.version>0.6.2-SNAPSHOT</rabbitmq.version>
+		<clojars.rabbitmq>0.2.7-SNAPSHOT</clojars.rabbitmq>
+		<ampq.version>3.5.6</ampq.version>
+		<clojar.pdoctor.version>0.0.1</clojar.pdoctor.version>
+		<commons.lang.version>2.6</commons.lang.version>
+		<avro.version>1.7.7</avro.version>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>clojars</id>
+			<url>http://clojars.org/repo</url>
+		</repository>
+	</repositories>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven.compiler.version}</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>${maven.plugin.assembly}</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>assemble-all</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+
+
+	<dependencies>
+		<!-- Kafka Org -->
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka_2.10</artifactId>
+			<version>${kafka.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.zookeeper</groupId>
+					<artifactId>zookeeper</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>${kafka.clients.version}</version>
+		</dependency>
+		<!-- Storm ORG -->
+		<dependency>
+			<groupId>org.apache.storm</groupId>
+			<artifactId>storm-kafka</artifactId>
+			<version>${storm.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.storm</groupId>
+			<artifactId>storm-core</artifactId>
+			<version>${storm.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- RabbitMq -->
+		<dependency>
+			<groupId>io.latent</groupId>
+			<artifactId>storm-rabbitmq</artifactId>
+			<version>${rabbitmq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.clojars.storm-amqp</groupId>
+			<artifactId>storm-amqp-spout</artifactId>
+			<version>${clojars.rabbitmq}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.rabbitmq</groupId>
+			<artifactId>amqp-client</artifactId>
+			<version>${ampq.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.clojars.pdoctor</groupId>
+			<artifactId>storm-json</artifactId>
+			<version>${clojar.pdoctor.version}</version>
+		</dependency>
+		<!-- commons -->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>${commons.lang.version}</version>
+		</dependency>
+		<!-- Avro -->
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro</artifactId>
+			<version>${avro.version}</version>
+		</dependency>
+	</dependencies>
+</project>

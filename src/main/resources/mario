@@ -1,0 +1,35 @@
+#source Kakfa Point
+sourceZooKeeperURL=atppidevtest-kafkazk01:2181,atppidevtest-kafkazk02:2181,atppidevtest-kafkazk03:2181,atppidevtest-nimbus02:2181,atppidevtest-hbase01:2181
+inputTopic = test
+
+#destination
+destinationKafkaURL=atppidevtest-kafkazk01:6667,atppidevtest-kafkazk02:6667,atppidevtest-kafkazk03:6667
+outputTopic = test2
+
+#not used sourceKafkaURL, destination ZooKeeperURL only for testing
+destinationZooKeeperURL=atppidevtest-kafkazk01:2181,atppidevtest-kafkazk02:2181,atppidevtest-kafkazk03:2181,atppidevtest-nimbus02:2181,atppidevtest-hbase01:2181
+sourceKafkaURL=atppidevtest-kafkazk01:6667,atppidevtest-kafkazk02:6667,atppidevtest-kafkazk03:6667
+
+#encoding  kafka.serializer.DefaultEncoder for bytes and kafka.serializer.StringEncoder for String
+#serializerEncodingValue = kafka.serializer.DefaultEncoder
+serializerEncodingValue = kafka.serializer.StringEncoder
+# Field Name , bytes for bytes , str for StringSchema
+#partitionFieldName = bytes
+partitionFieldName = str
+
+# raw for RawScheme (bytes) , string for StringScheme
+#schemeType = raw
+schemeType = string
+
+#Mostly static values
+topologyName = IdentityTopologyKafka
+streamName = SpoutIdentityKafka
+requiredAcks = 1
+maxSpout=20
+parallelCount=4
+metricsParallelCount=1
+topology.workers=5
+topology.spout.max.batch.size=10
+topology.message.timeout.secs=30
+topology.max.spout.pending=50
+
