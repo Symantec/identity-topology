@@ -1,6 +1,6 @@
 # Identity Topology
 
-## Goal : Reading streaming data from rabbbitmq or kafka and writing the data to another endpoint and add Custom Logic if needed
+## Goal : Reading streaming data from rabbbitmq or kafka and writing the data to another endpoint
 
 1. Property File : src/main/resources/*.Properties
 2. We are trying to achieve Exactly once using Trident
