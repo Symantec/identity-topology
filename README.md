@@ -68,7 +68,9 @@ metricsParallelCount		Integer			1
 topology.workers			Integer			1										Maximum value for this parameter is equal to the number of Storm supervisor nodes on the cluster.
 ```
 
-## Addtional
-Note : Only one source point at a time, either Kafka or RabbitMq
-Refrence / Good Read
+## Addtional Refrence / Good Read
 1. https://cwiki.apache.org/confluence/display/KAFKA/Idempotent+Producer
+2. 
+
+## Note : 
+Only one source point at a time, either Kafka or RabbitMq
