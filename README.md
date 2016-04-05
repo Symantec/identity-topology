@@ -3,7 +3,7 @@
 ## Goal : Reading streaming data from rabbbitmq or kafka and writing the data to another endpoint and add Custom Logic if needed
 
 1. Property File : src/main/resources/*.Properties
-2. We are trying to achieve Exactly once using Trident, at this time it is close but not there yet.
+2. We are trying to achieve Exactly once using Trident
 
 
 ## Building project 
