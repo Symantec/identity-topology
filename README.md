@@ -8,7 +8,7 @@
 
 ## Building project 
 
-1. Download this project(rabbitmq spout and ) https://github.com/ppat/storm-rabbitmq  and install the jar <WE will submit the pull request for the TridentSpout which is missing>
+1. Download this project(rabbitmq spout and ) https://github.com/ppat/storm-rabbitmq  and install the jar -WE will submit the pull request for the TridentSpout which is missing.
 2. mvn install:install-file -Dfile=${WORKSPACE}/${PROJECT}/storm-rabbitmq-0.6.2-SNAPSHOT.jar -DgroupId=io.latent -DartifactId=storm-rabbitmq  -Dversion=0.6.2-SNAPSHOT -Dpackaging=jar
 3. mvn clean test package -U
 
