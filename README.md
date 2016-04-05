@@ -2,7 +2,7 @@
 
 ## Goal : Reading streaming data from rabbbitmq or kafka and writing the data to another endpoint
 
-1. Property File : src/main/resources/*.Properties
+1. Property File: src/main/resources/*.Properties
 2. We are trying to achieve Exactly once using Trident
 
 
@@ -68,9 +68,9 @@ metricsParallelCount		Integer			1
 topology.workers			Integer			1										Maximum value for this parameter is equal to the number of Storm supervisor nodes on the cluster.
 ```
 
-## Addtional Refrence / Good Read
+## Additional Reference / Good Read
 1. https://cwiki.apache.org/confluence/display/KAFKA/Idempotent+Producer
-2. 
 
 ## Note : 
 Only one source point at a time, either Kafka or RabbitMq
+
