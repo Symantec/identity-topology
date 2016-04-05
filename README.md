@@ -20,8 +20,8 @@
 Local mode within eclipse IDE or Remote to any cluster
 
 ```sh
-eg : storm jar  data-pipe-storm-0.0.2-SNAPSHOT-jar-with-dependencies.jar -c nimbus.host=<hostname> -c nimbus.port=<port_number> com.symantec.cpe.StartService <PropertyFile>
-eg : storm jar  data-pipe-storm-0.0.2-SNAPSHOT-jar-with-dependencies.jar com.symantec.cpe.StartService <PropertyFile>
+eg : storm jar   -c nimbus.host=<hostname> -c nimbus.port=<port_number> IdentityTopology-1.0.0-jar-with-dependencies.jar com.symantec.cpe.StartService <PropertyFile>
+eg : storm jar  IdentityTopology-1.0.0-jar-with-dependencies.jar com.symantec.cpe.StartService <PropertyFile>
 ```
 
 
