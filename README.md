@@ -6,6 +6,12 @@
 2. We are trying to achieve Exactly once using Trident
 
 
+## Architecture
+<p align="center">
+  <img src="https://github.com/Symantec/identity-topology/blob/master/src/main/resources/image.png" align="center">
+</p>
+
+
 ## Building project 
 
 1. Download this project(rabbitmq spout and ) https://github.com/ppat/storm-rabbitmq  and install the jar -WE will submit the pull request for the TridentSpout which is missing.
