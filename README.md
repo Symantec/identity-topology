@@ -1,8 +1,9 @@
-# Data Pipe
+# Identity Topology
 
 ## Goal : Reading streaming data from rabbbitmq or kafka and writing the data to another endpoint and add Custom Logic if needed
 
 1. Property File : src/main/resources/*.Properties
+2. We are trying to achieve Exactly once using Trident, at this time it is close but not there yet.
 
 
 ## Building project 
@@ -67,4 +68,7 @@ metricsParallelCount		Integer			1
 topology.workers			Integer			1										Maximum value for this parameter is equal to the number of Storm supervisor nodes on the cluster.
 ```
 
+## Addtional
 Note : Only one source point at a time, either Kafka or RabbitMq
+Refrence / Good Read
+1. https://cwiki.apache.org/confluence/display/KAFKA/Idempotent+Producer
