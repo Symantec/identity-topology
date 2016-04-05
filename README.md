@@ -3,20 +3,18 @@
 ## Goal : Reading streaming data from rabbbitmq or kafka and writing the data to another endpoint and add Custom Logic if needed
 
 1. Property File : src/main/resources/*.Properties
-2. Custom Logic  : File com.symantec.cpe.storm.LogicBolt -> Add any custom logic in execute method, We will add different spouts down the line 
 
 
 ## Building project 
 
-1. Download this project(rabbitmq spout and ) https://github.com/ppat/storm-rabbitmq  and install the jar
+1. Download this project(rabbitmq spout and ) https://github.com/ppat/storm-rabbitmq  and install the jar <WE will submit the pull request for the TridentSpout which is missing>
 2. mvn install:install-file -Dfile=${WORKSPACE}/${PROJECT}/storm-rabbitmq-0.6.2-SNAPSHOT.jar -DgroupId=io.latent -DartifactId=storm-rabbitmq  -Dversion=0.6.2-SNAPSHOT -Dpackaging=jar
 3. mvn clean test package -U
 
 ## Deploying project 
 
 1. Update the property File
-2. Add any logic if required in the Logic Bolt , build Jar as per above
-3. Run as per the below command
+2. Run as per the below command
 
 ## Run Options 
 Local mode within eclipse IDE or Remote to any cluster
@@ -35,7 +33,7 @@ sourceZooKeeperURL String     localhost:2181
 inputTopic         String     source-ga 
  ```
 
-## RabbitMQ Input Parameters
+## RabbitMQ Input Parameters, Can Read from Two EndPoints of Rabbit
 ```sh
 Property          	Type      (format)Example
 rabbitmq.host    	String	localhost
