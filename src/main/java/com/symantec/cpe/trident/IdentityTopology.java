@@ -1,102 +1,53 @@
-/**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.symantec.cpe.trident;
- 
-import java.util.Properties;
+
+
 
 import org.apache.log4j.Logger;
+import org.apache.storm.Config;
+import org.apache.storm.metric.LoggingMetricsConsumer;
+import org.apache.storm.trident.Stream;
+import org.apache.storm.trident.TridentState;
+import org.apache.storm.trident.TridentTopology;
 
+import com.symantec.cpe.bolt.kafka.BuildKafkaState;
+import com.symantec.cpe.bolt.rabbit.BuildRabbitState;
 import com.symantec.cpe.config.Constants;
+import com.symantec.cpe.spout.StreamBuilder;
 import com.symantec.cpe.util.TridentRunUtil;
-
-import backtype.storm.Config;
-import backtype.storm.metric.LoggingMetricsConsumer;
-import backtype.storm.tuple.Fields;
-import storm.kafka.trident.TridentKafkaState;
-import storm.kafka.trident.TridentKafkaStateFactory;
-import storm.kafka.trident.TridentKafkaUpdater;
-import storm.kafka.trident.selector.DefaultTopicSelector;
-import storm.trident.Stream;
-import storm.trident.TridentState;
-import storm.trident.TridentTopology;
+import com.symantec.storm.metrics.statsd.StatsdMetricConsumer;
 
 
 public class IdentityTopology {
 
   private static final Logger LOG = Logger.getLogger(IdentityTopology.class);
 
- 
-  /**
-   * Builds the Config for producer via KafkaURL, Encoding type and acknowledge count
-   * @param brokerURL
-   * @param serializerEncodingValue
-   * @param requiredAcks
-   * @param logginParallelism
-   * @param noOfWorkers
-   * @param timeOut
-   * @param maxSpout
-   * @param maxRetries
-   * @return
-   */
-  private static Config getProducerConf(String brokerURL, String serializerEncodingValue,
-      String requiredAcks, int logginParallelism, int noOfWorkers, int timeOut, int maxSpout, String maxRetries) {
-    Config conf = new Config();
-    conf.setNumWorkers(noOfWorkers);
-    conf.registerMetricsConsumer(LoggingMetricsConsumer.class, logginParallelism);
-    conf.put(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS, timeOut);
-    conf.setMaxSpoutPending(maxSpout);
-    
-    // set Kafka producer properties.
-    Properties props = new Properties();
-    props.put(Constants.PROPERTY_NAME_BROKER_URL, brokerURL);
-    props.put(Constants.PROPERTY_NAME_REQUIRED_ACKS, requiredAcks);
-    props.put(Constants.MAX_RETRIES, maxRetries);
-    props.put(Constants.SERIALIZER_CLASS, serializerEncodingValue);
-
-    // put that also in conf
-    conf.put(TridentKafkaState.KAFKA_BROKER_PROPERTIES, props);
-
-    return conf;
-  }
 
   /**
-   * Reads inputParameters from inputPropertyConf and runs the topology either locally or remotely
-   *  
+   * Reads basic inputParameters from inputPropertyConf and runs the topology either locally or
+   * remotely
+   * 
    * @param inputPropertyConf
    */
+
   public static void buildToplogyAndSubmit(Config inputPropertyConf) {
 
-    String writingBrokerURL = null; /// with port
-    String outputTopic = null;
     String topologyName = null;
     String partitionFieldName = null;
-    String serializerEncodingValue = null;
-    String requiredAcks = null;
+
+
+    String rateLimitFeature = "no";
+
     int spoutParallelHint = 1;
     int boltParallelHint = 1;
     int metricsParallel = 1;
     int noOfWorkers = 1;
     int timeOut = 30;
-    int maxSpout = 10;
-    String maxRetries = "0";
+    int maxSpout = 1;
+
 
     boolean runLocally = false;
     String spoutType = "kafka";
+    String boltType = "kafka";
 
     try {
       if (inputPropertyConf == null || inputPropertyConf.isEmpty()) {
@@ -107,7 +58,6 @@ public class IdentityTopology {
 
       LOG.info(Constants.RUN_LOCATION);
       LOG.info(inputPropertyConf.get(Constants.RUN_LOCATION).toString());
-
       LOG.info("Local? \t " + runLocally);
       if (inputPropertyConf.get(Constants.RUN_LOCATION).toString().toLowerCase()
           .contains("remote")) {
@@ -117,18 +67,12 @@ public class IdentityTopology {
       }
       LOG.info(runLocally);
 
+
       LOG.info(Constants.SOURCE_TYPE);
       spoutType = inputPropertyConf.get(Constants.SOURCE_TYPE).toString(); /// with
       LOG.info(spoutType);
 
 
-      LOG.info(Constants.DESTINATION_KAFKA_URL_STRING);
-      writingBrokerURL = inputPropertyConf.get(Constants.DESTINATION_KAFKA_URL_STRING).toString(); /// with
-      LOG.info(writingBrokerURL);
-
-      LOG.info(Constants.OUTPUT_TOPIC_STRING);/// port
-      outputTopic = inputPropertyConf.get(Constants.OUTPUT_TOPIC_STRING).toString();
-      LOG.info(outputTopic);
 
       LOG.info(Constants.TOPOLOGY_NAME_STRING);
       topologyName = inputPropertyConf.get(Constants.TOPOLOGY_NAME_STRING).toString();
@@ -138,13 +82,6 @@ public class IdentityTopology {
       partitionFieldName = inputPropertyConf.get(Constants.PARTITION_FIELD_NAME_STRING).toString();
       LOG.info(partitionFieldName);
 
-      LOG.info(Constants.ENCODING_STRING);
-      serializerEncodingValue = inputPropertyConf.get(Constants.ENCODING_STRING).toString();
-      LOG.info(serializerEncodingValue);
-
-      LOG.info(Constants.ACKS_STRING);
-      requiredAcks = inputPropertyConf.get(Constants.ACKS_STRING).toString();
-      LOG.info(requiredAcks);
 
       LOG.info(Constants.SPOUT_PARALLEL_STRING);
       spoutParallelHint =
@@ -174,46 +111,106 @@ public class IdentityTopology {
       maxSpout =
           Integer.parseInt(inputPropertyConf.get(Config.TOPOLOGY_MAX_SPOUT_PENDING).toString());
       LOG.info(maxSpout);
-      
-      LOG.info(Constants.MAX_RETRIES);
-      maxRetries =
-           inputPropertyConf.get(Constants.MAX_RETRIES).toString();
-      LOG.info(maxSpout);
+
+      // new
+      LOG.info(Constants.RATE_LIMIT_FEATURE);
+      rateLimitFeature = inputPropertyConf.get(Constants.RATE_LIMIT_FEATURE).toString();
+      LOG.info(rateLimitFeature);
+
+
+      // Bolt type
+      LOG.info(Constants.DESTINATION_TYPE);
+      boltType = inputPropertyConf.get(Constants.DESTINATION_TYPE).toString(); /// with
+      LOG.info(boltType);
+
+
 
     } catch (Exception e) {
       LOG.error("Error in processing property file" + e);
       System.exit(0);
     }
 
+
+
+    /////////////////////
+
     // Topology Constructor
     TridentTopology topology = new TridentTopology();
 
-    // Producer Config
-    Config producerconf = getProducerConf(writingBrokerURL, serializerEncodingValue, requiredAcks,
-        metricsParallel, noOfWorkers, timeOut, maxSpout,maxRetries);
 
-    producerconf.setDebug(true);
-    // Build Stream with Spout for reading
-    Stream stream = StreamBuilder.getStream(spoutType, inputPropertyConf, topology)
-        .parallelismHint(spoutParallelHint);
 
-    // Write to endPoint
-    TridentKafkaStateFactory stateFactory =
-        new TridentKafkaStateFactory().withKafkaTopicSelector(new DefaultTopicSelector(outputTopic))
-            .withTridentTupleToKafkaMapper(new TransactionTupleToKafkaMapper(partitionFieldName));
+    // Build Stream with Spout for reading, spoutParallelHint is needed for rate limiting
+    Stream stream = StreamBuilder.getStream(spoutType, inputPropertyConf, topology,
+        rateLimitFeature, spoutParallelHint,partitionFieldName);
 
-    @SuppressWarnings("unused")
-    TridentState state =
-        stream.shuffle().partitionPersist(stateFactory, new Fields(partitionFieldName),
-            new TridentKafkaUpdater(), new Fields()).parallelismHint(boltParallelHint);
+    stream.parallelismHint(spoutParallelHint);
+
+
+    //
+
+    // Write to endPoint, pass spoutType to identify the Tuple Mapper.
+
+    TridentState state = null;
+    
+    String field = "word";
+
+    if (boltType.toLowerCase().contains("rabbit")) {
+
+      state = BuildRabbitState.getState(spoutType, stream, field, inputPropertyConf);
+
+    } else {
+
+      state = BuildKafkaState.getState(spoutType, stream, field, inputPropertyConf);
+
+    }
+
+    // hack
+    
+   
+    inputPropertyConf.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, maxSpout);
+    inputPropertyConf.setMaxSpoutPending(maxSpout); 
+    // output tasks
+    state.parallelismHint(boltParallelHint);
+
+    // set number of workers
+    inputPropertyConf.setNumWorkers(noOfWorkers);
+    inputPropertyConf.put(Config.TOPOLOGY_ACKER_EXECUTORS, noOfWorkers);
+
+    // timeout
+    inputPropertyConf.put(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS, timeOut);
+
+    inputPropertyConf.setNumAckers(metricsParallel);
+    //
+    inputPropertyConf.registerMetricsConsumer(LoggingMetricsConsumer.class, metricsParallel);
+
     
 
+    
+    // Configure the StatsdMetricConsumer
+  //  registerStatsDConfig(inputPropertyConf, metricsParallel);
+
+//     inputPropertyConf.setDebug(true);
     // Submit Topology
     if (runLocally) {
-      TridentRunUtil.runTopologyLocally(topology, topologyName, producerconf);
+      TridentRunUtil.runTopologyLocally(topology, topologyName, inputPropertyConf);
     } else {
-      TridentRunUtil.runTopologyRemotely(topology, topologyName, producerconf);
+      TridentRunUtil.runTopologyRemotely(topology, topologyName, inputPropertyConf);
     }
+
+
   }
 
+
+  private static void registerStatsDConfig(Config inputPropertyConf, int metricsParallel) {
+    if (inputPropertyConf.containsKey(Constants.STATSD_FEATURE)) {
+      String statsD = inputPropertyConf.get(Constants.STATSD_FEATURE).toString();
+      if ("YES".equalsIgnoreCase(statsD)) {
+        inputPropertyConf.registerMetricsConsumer(StatsdMetricConsumer.class, inputPropertyConf,
+            metricsParallel);
+      }
+
+    }
+  }
 }
+
+
